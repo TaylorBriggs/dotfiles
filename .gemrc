@@ -1,0 +1,4 @@
+gem: --no-ri --no-rdoc
+custom_shebang: $env ruby_executable_hooks
+install: --no-rdoc --no-ri
+update: --no-rdoc --no-ri

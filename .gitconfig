@@ -1,0 +1,37 @@
+[user]
+	name = Taylor Briggs
+	email = taylor.briggs@gmail.com
+	
+[color]
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+	ui = true
+	pager = true
+       
+[color "status"]
+	added = yellow
+	changed = green
+	untracked = cyan
+
+[core]
+	quotepath = false
+       
+[alias]
+	co = checkout
+	ci = commit -am
+	br = branch
+	df = diff
+	w = whatchanged
+	lg = log -p
+	lol = log --graph --decorate --pretty=oneline --abbrev-commit
+	lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+	ls = ls-files
+	plo = pull origin
+	pho = push origin
+	st = status
+	lof = log --
+
+[push]
+	default = current
