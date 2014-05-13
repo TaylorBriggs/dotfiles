@@ -23,6 +23,7 @@
 	ci = commit -am
 	br = branch
 	df = diff
+	f = fetch
 	w = whatchanged
 	lg = log -p
 	lol = log --graph --decorate --pretty=oneline --abbrev-commit
