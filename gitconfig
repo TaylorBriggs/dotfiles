@@ -1,0 +1,51 @@
+[user]
+	name = Taylor Briggs
+	email = taylor.briggs@gmail.com
+
+[core]
+  editor = vim
+  excludesfile = ~/.gitignore
+	quotepath = false
+
+[color]
+  ui = true
+  pager = true
+	branch = auto
+	diff = auto
+	interactive = auto
+
+[color "status"]
+	added = yellow
+	changed = green
+	untracked = cyan
+
+[merge]
+  tool = opendiff
+
+[alias]
+	co = checkout
+	ci = commit -v
+	br = branch
+	df = diff
+	f = fetch
+	lg = log -p
+	lof = log --
+	lol = log --graph --decorate --abbrev-commit
+	lola = log --graph --decorate --abbrev-commit --all
+	ls = ls-files
+	pho = push origin
+	plo = pull origin
+	rb = rebase
+	rbi = rebase -i
+	rpo = remote prune origin
+	st = status
+	w = whatchanged
+
+[format]
+  pretty = oneline
+
+[github]
+  user = TaylorBriggs
+
+[push]
+	default = current
