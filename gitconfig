@@ -23,6 +23,7 @@
   tool = opendiff
 
 [alias]
+	aa = add -A
 	co = checkout
 	ci = commit -v
 	br = branch
