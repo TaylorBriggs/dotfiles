@@ -3,7 +3,7 @@
 	email = taylor.briggs@gmail.com
 
 [core]
-  editor = vim
+	editor = nvim
   excludesfile = ~/.gitignore
 	quotepath = false
 
