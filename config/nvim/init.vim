@@ -68,6 +68,7 @@ if v:version >= 703
   Plug 'Shougo/vimshell.vim'
 endif
 
+Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
 "" Color
@@ -282,6 +283,9 @@ if g:vim_bootstrap_editor == 'nvim'
 else
   nnoremap <silent> <leader>sh :VimShellCreate<CR>
 endif
+
+" Map C-e to <Esc>
+inoremap <C-e> <Esc>
 
 "*****************************************************************************
 "" Functions
