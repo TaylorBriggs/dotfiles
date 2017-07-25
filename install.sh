@@ -2,6 +2,14 @@
 
 cutstring="DO NOT EDIT BELOW THIS LINE"
 
+copyDir() {
+  cp -Rn "$1" "$2"
+}
+
+linkFile() {
+  ln -s "$1" "$2"
+}
+
 for dir in */; do
   target="$HOME/.$dir"
 
@@ -13,16 +21,16 @@ for dir in */; do
         echo "Creating $inner_target"
 
         if [ -d $name ]; then
-          cp -Rn "$PWD/$name" "$inner_target"
+          copyDir "$PWD/$name" "$inner_target"
         else
-          ln -s "$PWD/$name" "$inner_target"
+          linkFile "$PWD/$name" "$inner_target"
         fi
       fi
     done
   else
     echo "Creating $target"
 
-    cp -Rn "$PWD/$dir" "$target"
+    copyDir "$PWD/$dir" "$target"
   fi
 done
 
@@ -55,7 +63,7 @@ for name in *; do
           if [[ -n `grep "$cutstring" "$name"` ]]; then
             cp "$PWD/$name" "$target"
           else
-            ln -s "$PWD/$name" "$target"
+            linkFile "$PWD/$name" "$target"
           fi
         fi
       fi
