@@ -69,9 +69,13 @@ endif
 
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
 "" Color
 Plug 'flazz/vim-colorschemes'
+
+"" tmux
+Plug 'christoomey/vim-tmux-navigator'
 
 "*****************************************************************************
 "" Custom bundles
@@ -159,15 +163,22 @@ else
     set shell=/bin/sh
 endif
 
-" session management
+"" session management
 let g:session_directory = "~/.config/nvim/session"
 let g:session_autoload = "no"
 let g:session_autosave = "no"
 let g:session_command_aliases = 1
 
-" Ale settings
-let g:ale_lint_on_save = 1
-let g:ale_lint_on_text_changed = 1
+"" deoplete
+let g:deoplete#enable_at_startup = 1
+
+"" Ale settings
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_enter = 0
+let g:ale_linters = { 'jsx': ['prettier_eslint'] }
+let g:ale_fixers = {
+\   'javascript': ['prettier_eslint']
+\}
 
 "*****************************************************************************
 "" Visual Settings
@@ -333,6 +344,11 @@ augroup END
 
 augroup vimrc-vimplug
   autocmd VimEnter * if !empty(filter(copy(g:plugs), '!isdirectory(v:val.dir)')) | PlugInstall | q | endif
+augroup END
+
+augroup FiletypeGroup
+  autocmd!
+  au BufNewFile,BufRead *.jsx set filetype=javascript.jsx
 augroup END
 
 set autoread
