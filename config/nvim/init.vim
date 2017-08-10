@@ -36,7 +36,10 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'w0rp/ale'
-
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'jiangmiao/auto-pairs'
+Plug 'yggdroot/indentline'
+Plug 'vim-airline/vim-airline'
 " Color schemes
 Plug 'flazz/vim-colorschemes'
 Plug 'hzchirs/vim-material'
@@ -218,6 +221,7 @@ let g:NERDTreeDirArrowCollapsible = '▾'
 let NERDTreeCaseSensitiveSort = 1
 let NERDTreeWinPos = "left"
 let NERDTreeQuitOnOpen = 1
+let NERDTreeShowHidden = 1
 
 augroup NERDTree
   autocmd StdinReadPre * let s:std_in=1
@@ -245,6 +249,7 @@ let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 " remap the tab key to do autocompletion or indentation depending on the
 " context (from http://www.vim.org/tips/tip.php?tip_id=102)
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:deoplete#enable_at_startup = 1
 
 function! InsertTabWrapper()
   let col = col('.') - 1
@@ -278,5 +283,6 @@ let g:ale_fixers = {
 " Remap C-e to Esc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+nnoremap <C-e> <Esc>
 inoremap <C-e> <Esc>
 vnoremap <C-e> <Esc>
