@@ -50,6 +50,7 @@ Plug 'christoomey/vim-tmux-navigator'
 " Language support
 Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-markdown'
+Plug 'jamshedvesuna/vim-markdown-preview'
 
 " Frameworks
 Plug 'tpope/vim-rails'
@@ -210,6 +211,13 @@ if executable('ag')
   let g:ackprg = 'ag --vimgrep'
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Markdown preview
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let vim_markdown_preview_toggle = 2
+let vim_markdown_preview_github = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NERDTree
