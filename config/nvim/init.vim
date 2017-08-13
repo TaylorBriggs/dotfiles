@@ -280,7 +280,8 @@ let g:ale_sign_warning = '⚠'
 let g:ale_linters = {
 \  'erb': [''],
 \  'javascript': ['prettier_eslint'],
-\  'jsx': ['prettier_eslint']
+\  'jsx': ['prettier_eslint'],
+\  'rb': ['brakeman', 'rubocop']
 \}
 let g:ale_fixers = {
 \  'javascript': ['eslint'],
