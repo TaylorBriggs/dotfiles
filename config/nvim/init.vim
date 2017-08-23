@@ -281,12 +281,12 @@ let g:ale_linters = {
 \  'erb': [''],
 \  'javascript': ['prettier_eslint'],
 \  'jsx': ['prettier_eslint'],
-\  'rb': ['brakeman', 'rubocop']
+\  'ruby': ['brakeman', 'rubocop']
 \}
 let g:ale_fixers = {
 \  'javascript': ['eslint'],
 \  'jsx': ['eslint'],
-\  'rb': ['brakeman', 'rubocop']
+\  'ruby': ['brakeman', 'rubocop']
 \}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
