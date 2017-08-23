@@ -24,7 +24,8 @@
 
 [alias]
 	aa = add -A
-	co = checkout
+  co = checkout
+  cob = checkout -b
 	ci = commit -v
 	br = branch
 	df = diff
