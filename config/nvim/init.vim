@@ -230,6 +230,7 @@ let NERDTreeCaseSensitiveSort = 1
 let NERDTreeWinPos = "left"
 let NERDTreeQuitOnOpen = 1
 let NERDTreeShowHidden = 1
+let NERDTreeIgnore = ['.git$[[dir]]', '.DS_Store']
 
 augroup NERDTree
   autocmd StdinReadPre * let s:std_in=1
