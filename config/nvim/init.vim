@@ -30,6 +30,7 @@ call plug#begin(expand('~/.config/nvim/plugged'))
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
 Plug 'scrooloose/nerdtree'
+Plug 'xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
@@ -232,11 +233,14 @@ let NERDTreeWinPos = "left"
 let NERDTreeQuitOnOpen = 1
 let NERDTreeShowHidden = 1
 let NERDTreeIgnore = ['.git$[[dir]]', '.DS_Store']
+let NERDTreeMinimalUI = 1
+let NERDTreeAutoDeleteBuffer = 1
 
 augroup NERDTree
   autocmd StdinReadPre * let s:std_in=1
   autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-  autocmd VimEnter * if &filetype !=# 'gitcommit' | NERDTree | endif
+  autocmd VimEnter * if (&filetype !=# 'gitcommit' && &filetype !=# 'gitrebase') | NERDTree | endif
+  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree.isTabTree()) | q | endif
 augroup END
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
