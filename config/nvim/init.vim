@@ -39,6 +39,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'w0rp/ale'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'yggdroot/indentline'
 Plug 'vim-airline/vim-airline'
@@ -274,6 +275,11 @@ let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:deoplete#enable_at_startup = 1
+
+let g:deoplete#sources#ternjs#filetypes = [
+  \ 'jsx',
+  \ 'javascript.jsx'
+  \ ]
 
 function! InsertTabWrapper()
   let col = col('.') - 1
