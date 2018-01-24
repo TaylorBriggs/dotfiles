@@ -38,11 +38,20 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'w0rp/ale'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'yggdroot/indentline'
 Plug 'vim-airline/vim-airline'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'Shougo/neco-syntax'
+Plug 'Shougo/neosnippet'
+Plug 'Shougo/neosnippet-snippets'
+Plug 'carlitux/deoplete-ternjs', {
+  \ 'do': 'npm install -g tern',
+  \ 'for': ['javascript', 'jsx']
+  \ }
+Plug 'othree/jspc.vim', { 'for': ['javascript', 'jsx'] }
+Plug 'fishbullet/deoplete-ruby'
+
 " Color schemes
 Plug 'flazz/vim-colorschemes'
 Plug 'hzchirs/vim-material'
@@ -269,28 +278,23 @@ let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 \ 'ruby', 'bash=sh']
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Autocomplete
-" remap the tab key to do autocompletion or indentation depending on the
-" context (from http://www.vim.org/tips/tip.php?tip_id=102)
+" Deoplete
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let g:deoplete#enable_at_startup = 1
+let g:loaded_python_provider = 1
+let g:python3_host_prog = '/usr/local/bin/python3'
 
-let g:deoplete#sources#ternjs#filetypes = [
-  \ 'jsx',
-  \ 'javascript.jsx'
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#omni#functions = {}
+let g:deoplete#omni#functions.javascript = [
+  \ 'tern#Complete',
+  \ 'jspc#omni'
   \ ]
 
-function! InsertTabWrapper()
-  let col = col('.') - 1
-  if !col || getline('.')[col - 1] !~ '\k'
-    return "\<tab>"
-  else
-    return "\<c-p>"
-  endif
-endfunction
-inoremap <tab> <c-r>=InsertTabWrapper()<cr>
-inoremap <s-tab> <c-n>
+set completeopt=longest,menuone,preview
+
+let g:deoplete#sources = {}
+let g:deoplete#sources['jsx'] = ['file', 'neosnippet', 'ternjs']
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ALE
