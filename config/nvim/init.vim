@@ -61,6 +61,7 @@ Plug 'christoomey/vim-tmux-navigator'
 
 " Language support
 Plug 'sheerun/vim-polyglot'
+Plug 'jparise/vim-graphql'
 Plug 'tpope/vim-markdown'
 Plug 'jamshedvesuna/vim-markdown-preview'
 Plug 'alvan/vim-closetag'
