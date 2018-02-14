@@ -51,6 +51,7 @@ Plug 'carlitux/deoplete-ternjs', {
   \ }
 Plug 'othree/jspc.vim', { 'for': ['javascript', 'jsx'] }
 Plug 'fishbullet/deoplete-ruby'
+Plug 'rizzatti/dash.vim'
 
 " Color schemes
 Plug 'flazz/vim-colorschemes'
