@@ -27,6 +27,8 @@ endif
 call plug#begin(expand('~/.config/nvim/plugged'))
 
 " Utilities
+Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf.vim'
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
 Plug 'scrooloose/nerdtree'
