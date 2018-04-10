@@ -162,6 +162,7 @@ set copyindent
 set number
 set numberwidth=3
 set showcmd
+set splitright
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Whitespace
