@@ -273,6 +273,7 @@ augroup END
 
 " Force markdown to hard wrap
 au BufRead,BufNewFile *.md setlocal textwidth=80
+au BufRead,BufNewFile * if expand('%:t') !~ '\.' | setlocal textwidth=80 | endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Markdown
@@ -296,10 +297,25 @@ let g:deoplete#omni#functions.javascript = [
   \ 'jspc#omni'
   \ ]
 
-set completeopt=longest,menuone,preview
-
 let g:deoplete#sources = {}
-let g:deoplete#sources['jsx'] = ['file', 'neosnippet', 'ternjs']
+let g:deoplete#sources._ = ['neosnippet']
+let g:deoplete#sources.jsx = ['file', 'ternjs']
+
+function! s:neosnippet_complete()
+  if pumvisible()
+    return "\<c-n>"
+  else
+    if neosnippet#expandable_or_jumpable()
+      return "\<Plug>(neosnippet_expand_or_jump)"
+    endif
+    return "\<tab>"
+  endif
+endfunction
+
+imap <expr><TAB> <SID>neosnippet_complete()
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " remap the tab key to do autocompletion or indentation depending on the
