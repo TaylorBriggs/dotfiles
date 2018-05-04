@@ -113,6 +113,7 @@ syntax on
 set background=dark
 colorscheme vim-material
 let g:airline_theme='material'
+hi clear SignColumn
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Search
