@@ -51,6 +51,7 @@ Plug 'carlitux/deoplete-ternjs', {
   \ 'do': 'npm install -g tern',
   \ 'for': ['javascript', 'jsx']
   \ }
+Plug 'othree/javascript-libraries-syntax.vim'
 Plug 'othree/jspc.vim', { 'for': ['javascript', 'jsx'] }
 Plug 'fishbullet/deoplete-ruby'
 Plug 'rizzatti/dash.vim'
@@ -91,18 +92,6 @@ nmap <Leader>fw :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
 " Quick buffer switching
 nnoremap <Leader><Leader> <C-^>
-
-" Don't have to press Shift in normal and visual modes
-nnoremap ; :
-vnoremap ; :
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Remap C-q to Esc
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-nnoremap <C-q> <Esc>
-inoremap <C-q> <Esc>
-vnoremap <C-q> <Esc>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Color scheme
@@ -160,7 +149,8 @@ set autoread
 set ruler
 set copyindent
 set number
-set numberwidth=3
+set numberwidth=5
+set relativenumber
 set showcmd
 set splitright
 
@@ -202,7 +192,7 @@ set smartcase
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 set wildmode=list:longest,list:full
-set wildignore+=*/.git/*,*/node_modules/**,*/vendor/ruby/**,*/_build/**,*/deps/**,*/tmp/*,.DS_Store
+set wildignore+=*/.git/*,*/vendor/ruby/**,*/_build/**,*/deps/**,*/tmp/*,.DS_Store
 set complete=.,w,t
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -274,6 +264,9 @@ augroup END
 " Force markdown to hard wrap
 au BufRead,BufNewFile *.md setlocal textwidth=80
 au BufRead,BufNewFile * if expand('%:t') !~ '\.' | setlocal textwidth=80 | endif
+
+" setup js libraries syntax
+let g:used_javascript_libs = 'underscore,react'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Markdown
@@ -354,5 +347,5 @@ let g:ale_fixers = {
 " Closetag
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let g:closetag_filenames = '*.html,*.jsx'
-let g:closetag_xhtml_filenames = '*.jsx'
+let g:closetag_filenames = '*.html,*.jsx,*.js'
+let g:closetag_xhtml_filenames = '*.jsx,*.js'
