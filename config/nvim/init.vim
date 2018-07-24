@@ -149,10 +149,16 @@ set autoread
 set ruler
 set copyindent
 set number
-set numberwidth=5
 set relativenumber
+set numberwidth=5
 set showcmd
 set splitright
+
+augroup numbertoggle
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+  autocmd BufLeave,FocusLost,InsertEnter * set norelativenumber
+augroup END
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Whitespace
