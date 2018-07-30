@@ -39,22 +39,18 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'w0rp/ale'
+Plug 'w0rp/ale', { 'do': 'npm i -g eslint gqlint prettier' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'yggdroot/indentline'
 Plug 'vim-airline/vim-airline'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Shougo/neco-syntax'
-Plug 'Shougo/neosnippet'
-Plug 'Shougo/neosnippet-snippets'
-Plug 'carlitux/deoplete-ternjs', {
-  \ 'do': 'npm install -g tern',
-  \ 'for': ['javascript', 'jsx']
+Plug 'autozimu/LanguageClient-neovim', {
+  \ 'branch': 'next',
+  \ 'do': 'bash install.sh',
   \ }
 Plug 'othree/javascript-libraries-syntax.vim'
-Plug 'othree/jspc.vim', { 'for': ['javascript', 'jsx'] }
-Plug 'fishbullet/deoplete-ruby'
 Plug 'rizzatti/dash.vim'
+Plug 'ludovicchabant/vim-gutentags'
 
 " Color schemes
 Plug 'flazz/vim-colorschemes'
@@ -200,19 +196,7 @@ set smartcase
 set wildmode=list:longest,list:full
 set wildignore+=*/.git/*,*/vendor/ruby/**,*/_build/**,*/deps/**,*/tmp/*,.DS_Store
 set complete=.,w,t
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Status bar
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-set laststatus=2               " always show statusbar
-set statusline=
-set statusline+=%-10.3n\       " buffer number
-set statusline+=%f\            " filename
-set statusline+=%h%m%r%w       " status flags
-set statusline+=%=             " right align remainder
-set statusline+=%-14(%l,%c%V%) " line, character
-set statusline+=%<%P           " file position
+set completeopt=longest,menuone,preview
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Less Annoying Bell
@@ -233,13 +217,6 @@ if executable('ag')
   let g:ackprg = 'ag --vimgrep'
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Markdown preview
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let vim_markdown_preview_toggle = 2
-let vim_markdown_preview_github = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NERDTree
@@ -285,52 +262,32 @@ let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Deoplete
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let g:loaded_python_provider = 1
-let g:python3_host_prog = 'python3'
+" python and python3 installed via homebrew
+let g:python_host_prog = '/usr/local/bin/python'
+let g:python3_host_prog = '/usr/local/bin/python3'
 
 let g:deoplete#enable_at_startup = 1
-let g:deoplete#omni#functions = {}
-let g:deoplete#omni#functions.javascript = [
-  \ 'tern#Complete',
-  \ 'jspc#omni'
-  \ ]
 
-let g:deoplete#sources = {}
-let g:deoplete#sources._ = ['neosnippet']
-let g:deoplete#sources.jsx = ['file', 'ternjs']
+let js_lc_command = $NVM_BIN . '/javascript-typescript-stdio'
+let g:LanguageClient_serverCommands = {
+  \ 'javascript': [js_lc_command],
+  \ 'javascript.jsx': [js_lc_command]
+  \ }
 
-function! s:neosnippet_complete()
-  if pumvisible()
-    return "\<c-n>"
-  else
-    if neosnippet#expandable_or_jumpable()
-      return "\<Plug>(neosnippet_expand_or_jump)"
-    endif
-    return "\<tab>"
-  endif
-endfunction
+" Map `<tab>` to Deoplete
+inoremap <silent><expr> <TAB>
+  \ pumvisible()
+  \ ? "\<C-n>"
+  \ : <SID>check_back_space()
+     \ ? "\<TAB>"
+     \ : deoplete#mappings#manual_complete()
+inoremap <silent><expr> <S-Tab>
+  \ pumvisible() ? '<C-p>' : ''
 
-imap <expr><TAB> <SID>neosnippet_complete()
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" remap the tab key to do autocompletion or indentation depending on the
-" context (from http://www.vim.org/tips/tip.php?tip_id=102)
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! InsertTabWrapper()
+function! s:check_back_space() abort
   let col = col('.') - 1
-  if !col || getline('.')[col - 1] !~ '\k'
-    return "\<tab>"
-  else
-    return "\<c-p>"
-  endif
+  return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
-inoremap <tab> <c-r>=InsertTabWrapper()<cr>
-inoremap <s-tab> <c-n>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ALE
@@ -340,14 +297,15 @@ let g:ale_lint_on_text_changed = 'never'
 let g:ale_sign_error = '✖︎'
 let g:ale_sign_warning = '⚠'
 let g:ale_linters = {
-\  'erb': [''],
-\  'graphql': ['gqlint']
-\}
+  \ 'erb': [''],
+  \ 'graphql': ['gqlint']
+  \ }
 let g:ale_fixers = {
-\  'javascript': ['eslint'],
-\  'json': ['prettier'],
-\  'ruby': ['rubocop']
-\}
+  \ 'javascript': ['eslint'],
+  \ 'javascript.jsx': ['eslint'],
+  \ 'json': ['prettier'],
+  \ 'ruby': ['rubocop']
+  \ }
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Closetag
