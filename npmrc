@@ -1,0 +1,6 @@
+depth = 0
+init-author-name = Taylor Briggs
+init-author-email = taylor.briggs@gmail.com
+init-license = MIT
+init-version = 0.1.0
+save-exact = true
