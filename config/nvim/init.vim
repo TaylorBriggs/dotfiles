@@ -260,7 +260,7 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 
 let g:deoplete#enable_at_startup = 1
 
-let js_lc_command = $NVM_BIN . '/javascript-typescript-stdio'
+let js_lc_command = 'npx javascript-typescript-stdio'
 let g:LanguageClient_serverCommands = {
   \ 'javascript': [js_lc_command],
   \ 'javascript.jsx': [js_lc_command]
