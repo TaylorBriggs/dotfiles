@@ -39,7 +39,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'w0rp/ale', { 'do': 'npm i -g eslint gqlint prettier' }
+Plug 'w0rp/ale', { 'do': 'npm i -g eslint gqlint prettier tslint' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'yggdroot/indentline'
 Plug 'vim-airline/vim-airline'
@@ -254,6 +254,7 @@ let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Deoplete
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " python and python3 installed via homebrew
 let g:python_host_prog = '/usr/local/bin/python'
 let g:python3_host_prog = '/usr/local/bin/python3'
@@ -263,7 +264,9 @@ let g:deoplete#enable_at_startup = 1
 let js_lc_command = 'npx javascript-typescript-stdio'
 let g:LanguageClient_serverCommands = {
   \ 'javascript': [js_lc_command],
-  \ 'javascript.jsx': [js_lc_command]
+  \ 'javascript.jsx': [js_lc_command],
+  \ 'typescript': [js_lc_command],
+  \ 'typescript.tsx': [js_lc_command]
   \ }
 
 " Map `<tab>` to Deoplete
@@ -295,6 +298,8 @@ let g:ale_linters = {
 let g:ale_fixers = {
   \ 'javascript': ['eslint'],
   \ 'javascript.jsx': ['eslint'],
+  \ 'typescript': ['tslint'],
+  \ 'typescript.tsx': ['tslint'],
   \ 'json': ['prettier'],
   \ 'ruby': ['rubocop']
   \ }
