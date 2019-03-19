@@ -49,7 +49,7 @@ Plug 'tpope/vim-unimpaired'
 Plug 'w0rp/ale', { 'do': 'npm i -g eslint gqlint prettier tslint' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'yggdroot/indentline'
-Plug 'vim-airline/vim-airline'
+Plug 'itchyny/lightline.vim'
 Plug 'autozimu/LanguageClient-neovim', {
   \ 'branch': 'next',
   \ 'do': 'bash install.sh',
@@ -60,7 +60,7 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'Shougo/deoplete.nvim', { 'do': function('PostDeoplete') }
 
 " Color schemes
-Plug 'hzchirs/vim-material'
+Plug 'drewtempelmeyer/palenight.vim'
 
 " tmux navigation
 Plug 'christoomey/vim-tmux-navigator'
@@ -102,9 +102,13 @@ nnoremap <Leader><Leader> <C-^>
 set termguicolors
 syntax on
 set background=dark
-colorscheme vim-material
-let g:airline_theme='material'
+colorscheme palenight
 hi clear SignColumn
+
+let g:lightline = {
+  \ 'colorscheme': 'palenight'
+  \ }
+set noshowmode
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Search
