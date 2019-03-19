@@ -21,6 +21,13 @@ if !filereadable(vimplug_exists)
   autocmd VimEnter * PlugInstall
 endif
 
+function! PostDeoplete(info)
+  if a:info.status == 'installed' || a:info.force
+    !npm install -g javascript-typescript-langserver
+    :UpdateRemotePlugins
+  endif
+endfunction
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -43,7 +50,6 @@ Plug 'w0rp/ale', { 'do': 'npm i -g eslint gqlint prettier tslint' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'yggdroot/indentline'
 Plug 'vim-airline/vim-airline'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'autozimu/LanguageClient-neovim', {
   \ 'branch': 'next',
   \ 'do': 'bash install.sh',
@@ -51,6 +57,7 @@ Plug 'autozimu/LanguageClient-neovim', {
 Plug 'othree/javascript-libraries-syntax.vim'
 Plug 'rizzatti/dash.vim'
 Plug 'ludovicchabant/vim-gutentags'
+Plug 'Shougo/deoplete.nvim', { 'do': function('PostDeoplete') }
 
 " Color schemes
 Plug 'hzchirs/vim-material'
@@ -261,14 +268,6 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 
 let g:deoplete#enable_at_startup = 1
 
-let js_lc_command = 'npx javascript-typescript-stdio'
-let g:LanguageClient_serverCommands = {
-  \ 'javascript': [js_lc_command],
-  \ 'javascript.jsx': [js_lc_command],
-  \ 'typescript': [js_lc_command],
-  \ 'typescript.tsx': [js_lc_command]
-  \ }
-
 " Map `<tab>` to Deoplete
 inoremap <silent><expr> <TAB>
   \ pumvisible()
@@ -285,6 +284,25 @@ function! s:check_back_space() abort
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" LanguageClient
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:LanguageClient_serverCommands = {
+  \ 'javascript.jsx': ['npx', 'javascript-typescript-stdio'],
+  \ 'javascript': ['npx', 'javascript-typescript-stdio'],
+  \ 'typescript': ['npx', 'javascript-typescript-stdio']
+  \ }
+
+function LC_maps()
+  if has_key(g:LanguageClient_serverCommands, &filetype)
+    nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
+    nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+  endif
+endfunction
+
+autocmd FileType * call LC_maps()
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ALE
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
