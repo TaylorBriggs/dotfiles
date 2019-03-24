@@ -4,7 +4,7 @@ filetype off
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Install Vim-Plug
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let vimplug_exists=expand('~/.config/nvim/autoload/plug.vim')
+let vimplug_exists=expand('~/.local/share/nvim/site/autoload/plug.vim')
 
 if !filereadable(vimplug_exists)
   if !executable("curl")
@@ -14,30 +14,28 @@ if !filereadable(vimplug_exists)
 
   echo "Installing Vim-Plug..."
   echo ""
-  silent !\curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs \
+  silent !\curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   let g:not_finish_vimplug = "yes"
 
-  autocmd VimEnter * PlugInstall
+  autocmd VimEnter * PlugInstall!
 endif
 
-function! PostDeoplete(info)
+function! LC_Install(info)
   if a:info.status == 'installed' || a:info.force
+    !/bin/bash install.sh
     !npm install -g javascript-typescript-langserver
-    :UpdateRemotePlugins
   endif
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-call plug#begin(expand('~/.config/nvim/plugged'))
+call plug#begin(expand('~/.local/share/nvim/plugged'))
 
 " Utilities
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
-Plug 'kien/ctrlp.vim'
-Plug 'mileszs/ack.vim'
 Plug 'scrooloose/nerdtree'
 Plug 'xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-commentary'
@@ -52,12 +50,12 @@ Plug 'yggdroot/indentline'
 Plug 'itchyny/lightline.vim'
 Plug 'autozimu/LanguageClient-neovim', {
   \ 'branch': 'next',
-  \ 'do': 'bash install.sh',
+  \ 'do': function('LC_Install'),
   \ }
 Plug 'othree/javascript-libraries-syntax.vim'
 Plug 'rizzatti/dash.vim'
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'Shougo/deoplete.nvim', { 'do': function('PostDeoplete') }
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 
@@ -87,9 +85,7 @@ filetype plugin indent on
 let mapleader=" "
 
 nmap <Leader>bd :bufdo bd!<CR>
-nmap <Leader>f :Ack!<space>
 nmap <Leader>\ :NERDTreeToggle \| :silent NERDTreeMirror<CR>
-nmap <Leader>T :CtrlPClearCache \| :CtrlP<CR>
 
 " Remove trailing whitespace
 nmap <Leader>fw :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
@@ -108,7 +104,7 @@ colorscheme palenight
 hi clear SignColumn
 
 let g:lightline = {
-  \ 'colorscheme': 'palenight'
+  \ 'colorscheme': 'palenight',
   \ }
 set noshowmode
 
@@ -209,20 +205,6 @@ set completeopt=longest,menuone,preview
 
 set visualbell
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" CtrlP / Ack / Searching
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let g:ctrlp_match_window_reversed = 1
-let g:ctrlp_map = '<Leader>t'
-let g:ctrlp_max_height = 30
-let g:ctrlp_show_hidden = 1
-
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-endif
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NERDTree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -268,10 +250,8 @@ let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 " Deoplete
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" python and python3 installed via homebrew
-let g:python_host_prog = '/usr/local/bin/python'
-let g:python3_host_prog = '/usr/local/bin/python3'
-
+" python3 installed via asdf
+let g:python3_host_prog = expand('~/.asdf/shims/python')
 let g:deoplete#enable_at_startup = 1
 
 " Map `<tab>` to Deoplete
@@ -303,7 +283,7 @@ let g:LanguageClient_serverCommands = {
   \ 'typescript': ['npx', 'javascript-typescript-stdio']
   \ }
 
-function LC_maps()
+function! LC_maps()
   if has_key(g:LanguageClient_serverCommands, &filetype)
     nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
     nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
