@@ -44,7 +44,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'w0rp/ale', { 'do': 'npm i -g eslint gqlint prettier tslint' }
+Plug 'w0rp/ale', { 'do': 'npm i -g eslint gqlint prettier tslint typescript' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'yggdroot/indentline'
 Plug 'itchyny/lightline.vim'
