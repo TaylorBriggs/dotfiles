@@ -156,6 +156,7 @@ set number
 set numberwidth=3
 set showcmd
 set splitright
+set foldmethod=indent
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Whitespace
