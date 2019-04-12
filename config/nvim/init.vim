@@ -1,3 +1,5 @@
+set encoding=utf-8
+set fileencoding=utf-8
 set nocompatible
 filetype off
 
@@ -44,7 +46,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'w0rp/ale', { 'do': 'npm i -g eslint gqlint prettier tslint typescript' }
+Plug 'w0rp/ale'
 Plug 'jiangmiao/auto-pairs'
 Plug 'yggdroot/indentline'
 Plug 'itchyny/lightline.vim'
@@ -58,6 +60,7 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
+Plug 'editorconfig/editorconfig-vim'
 
 " Color schemes
 Plug 'drewtempelmeyer/palenight.vim'
@@ -70,6 +73,7 @@ Plug 'sheerun/vim-polyglot'
 Plug 'jparise/vim-graphql'
 Plug 'tpope/vim-markdown'
 Plug 'alvan/vim-closetag'
+Plug 'mattn/emmet-vim'
 
 " Frameworks
 Plug 'tpope/vim-rails'
@@ -156,7 +160,6 @@ set number
 set numberwidth=3
 set showcmd
 set splitright
-set foldmethod=indent
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Whitespace
@@ -238,6 +241,14 @@ au BufRead,BufNewFile * if expand('%:t') !~ '\.' | setlocal textwidth=80 | endif
 
 " setup js libraries syntax
 let g:used_javascript_libs = 'underscore,react'
+
+" emmet
+let g:user_emmet_install_global=0
+let g:user_emmet_settings = {
+  \ 'javascript': { 'extends': 'jsx' },
+  \ }
+
+autocmd FileType html,css,javascript.jsx EmmetInstall
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Markdown
