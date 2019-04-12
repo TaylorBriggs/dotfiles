@@ -331,3 +331,9 @@ let g:ale_fixers = {
 
 let g:closetag_filenames = '*.html,*.jsx,*.js'
 let g:closetag_xhtml_filenames = '*.jsx,*.js'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Gutentags
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:gutentags_exclude_filetypes = ['gitcommit', 'gitrebase']
