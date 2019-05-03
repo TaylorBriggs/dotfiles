@@ -23,6 +23,9 @@ if !filereadable(vimplug_exists)
   autocmd VimEnter * PlugInstall!
 endif
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Plugins
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! LC_Install(info)
   if a:info.status == 'installed' || a:info.force
     !/bin/bash install.sh
@@ -30,9 +33,6 @@ function! LC_Install(info)
   endif
 endfunction
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Plugins
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin(expand('~/.local/share/nvim/plugged'))
 
 " Utilities
@@ -48,7 +48,6 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'w0rp/ale'
 Plug 'jiangmiao/auto-pairs'
-Plug 'yggdroot/indentline'
 Plug 'itchyny/lightline.vim'
 Plug 'autozimu/LanguageClient-neovim', {
   \ 'branch': 'next',
@@ -63,7 +62,7 @@ Plug 'Shougo/neosnippet-snippets'
 Plug 'editorconfig/editorconfig-vim'
 
 " Color schemes
-Plug 'drewtempelmeyer/palenight.vim'
+Plug 'dracula/vim', { 'as': 'dracula' }
 
 " tmux navigation
 Plug 'christoomey/vim-tmux-navigator'
@@ -101,31 +100,17 @@ nnoremap <Leader><Leader> <C-^>
 " Color scheme
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-set termguicolors
 syntax on
+set termguicolors
 set background=dark
-colorscheme palenight
-hi clear SignColumn
 
-let g:lightline = {
-  \ 'colorscheme': 'palenight',
-  \ }
 set noshowmode
+let g:lightline = {
+ \ 'colorscheme': 'dracula',
+ \ }
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Search
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-set nohlsearch
-set inccommand=split
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Speed up Vim
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-set notimeout
-set ttimeout
-set timeoutlen=50
+colorscheme dracula
+hi clear SignColumn
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Use a more logical Y
@@ -173,6 +158,7 @@ set shiftwidth=2
 set expandtab
 set listchars=tab:▸\ ,trail:·,eol:¬
 set showbreak=…
+set smartindent
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Whitespace Highlighting
@@ -190,9 +176,18 @@ autocmd BufWinLeave * call clearmatches()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 set hlsearch
+set inccommand=split
 set incsearch
 set ignorecase
 set smartcase
+
+nnoremap <Leader>h :nohl<CR>
+
+if (executable('ag'))
+  let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
+endif
+
+nnoremap <Leader>t :Files<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tab completion options
@@ -317,6 +312,7 @@ let g:ale_linters = {
   \ 'graphql': ['gqlint']
   \ }
 let g:ale_fixers = {
+  \ '*': ['remove_trailing_lines', 'trim_whitespace'],
   \ 'javascript': ['eslint'],
   \ 'javascript.jsx': ['eslint'],
   \ 'typescript': ['tslint'],
