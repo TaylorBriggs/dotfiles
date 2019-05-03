@@ -60,6 +60,7 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'editorconfig/editorconfig-vim'
+Plug 'Yggdroot/indentLine'
 
 " Color schemes
 Plug 'dracula/vim', { 'as': 'dracula' }
