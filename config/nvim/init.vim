@@ -334,3 +334,4 @@ let g:closetag_xhtml_filenames = '*.jsx,*.js'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:gutentags_exclude_filetypes = ['gitcommit', 'gitrebase']
+au FileType gitcommit,gitrebase let g:gutentags_enabled=0
