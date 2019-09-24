@@ -244,7 +244,7 @@ let g:user_emmet_settings = {
   \ 'javascript': { 'extends': 'jsx' },
   \ }
 
-autocmd FileType html,css,javascript.jsx EmmetInstall
+autocmd FileType html,css,javascript.jsx,javascriptreact EmmetInstall
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Markdown
@@ -287,6 +287,7 @@ xmap <C-k>  <Plug>(neosnippet_expand_target)
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:LanguageClient_serverCommands = {
+  \ 'javascriptreact': ['npx', 'javascript-typescript-stdio'],
   \ 'javascript.jsx': ['npx', 'javascript-typescript-stdio'],
   \ 'javascript': ['npx', 'javascript-typescript-stdio'],
   \ 'typescript': ['npx', 'javascript-typescript-stdio']
@@ -306,20 +307,21 @@ autocmd FileType * call LC_maps()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:ale_lint_on_text_changed = 'never'
-let g:ale_sign_error = '✖︎'
-let g:ale_sign_warning = '⚠'
+" let g:ale_sign_error = '✖︎'
+" let g:ale_sign_warning = '⚠'
 let g:ale_linters = {
   \ 'erb': [''],
-  \ 'graphql': ['gqlint']
+  \ 'graphql': ['gqlint'],
   \ }
 let g:ale_fixers = {
   \ '*': ['remove_trailing_lines', 'trim_whitespace'],
   \ 'javascript': ['eslint'],
   \ 'javascript.jsx': ['eslint'],
+  \ 'javascriptreact': ['eslint'],
   \ 'typescript': ['tslint'],
   \ 'typescript.tsx': ['tslint'],
   \ 'json': ['prettier'],
-  \ 'ruby': ['rubocop']
+  \ 'ruby': ['rubocop'],
   \ }
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -333,5 +335,6 @@ let g:closetag_xhtml_filenames = '*.jsx,*.js'
 " Gutentags
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+let g:gutentags_ctags_executable = '/usr/local/bin/ctags'
 let g:gutentags_exclude_filetypes = ['gitcommit', 'gitrebase']
 au FileType gitcommit,gitrebase let g:gutentags_enabled=0
