@@ -60,7 +60,7 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'Yggdroot/indentLine'
+Plug 'yggdroot/indentLine'
 
 " Color schemes
 Plug 'dracula/vim', { 'as': 'dracula' }
@@ -259,8 +259,7 @@ let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " python3 installed via asdf
-let python_path = substitute(system('asdf which python'), '\n$', '', '')
-let g:python3_host_prog = expand(python_path)
+let g:python3_host_prog = expand($ASDF_DIR . "/shims/python")
 let g:deoplete#enable_at_startup = 1
 
 " Map `<tab>` to Deoplete
