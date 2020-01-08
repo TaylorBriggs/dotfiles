@@ -29,7 +29,7 @@ endif
 function! LC_Install(info)
   if a:info.status == 'installed' || a:info.force
     !/bin/bash install.sh
-    !npm install -g javascript-typescript-langserver
+    !npm install -g javascript-typescript-langserver yaml-language-server@^0.4
   endif
 endfunction
 
@@ -38,7 +38,7 @@ call plug#begin(expand('~/.local/share/nvim/plugged'))
 " Utilities
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
-Plug 'scrooloose/nerdtree'
+Plug 'preservim/nerdtree'
 Plug 'xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-endwise'
@@ -46,7 +46,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'w0rp/ale'
+Plug 'dense-analysis/ale'
 Plug 'jiangmiao/auto-pairs'
 Plug 'itchyny/lightline.vim'
 Plug 'autozimu/LanguageClient-neovim', {
@@ -220,11 +220,23 @@ let NERDTreeIgnore = ['.git$[[dir]]', '.DS_Store']
 let NERDTreeMinimalUI = 1
 let NERDTreeAutoDeleteBuffer = 1
 
+function! s:CheckToOpenNERDTree() abort
+  if (&ft == 'gitcommit' || &ft == 'gitrebase')
+    return
+  endif
+
+  NERDTree
+endfunction
+
+function! s:CheckToCloseNERDTree() abort
+  if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree.isTabTree())
+    quit
+  endif
+endfunction
+
 augroup NERDTree
-  autocmd StdinReadPre * let s:std_in=1
-  autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-  autocmd VimEnter * if (&filetype !=# 'gitcommit' && &filetype !=# 'gitrebase') | NERDTree | endif
-  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree.isTabTree()) | q | endif
+  autocmd VimEnter * call s:CheckToOpenNERDTree()
+  autocmd bufenter * call s:CheckToCloseNERDTree()
 augroup END
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -242,6 +254,8 @@ let g:used_javascript_libs = 'underscore,react'
 let g:user_emmet_install_global=0
 let g:user_emmet_settings = {
   \ 'javascript': { 'extends': 'jsx' },
+  \ 'javascript.jsx': { 'extends': 'jsx' },
+  \ 'javascriptreact': { 'extends': 'jsx' },
   \ }
 
 autocmd FileType html,css,javascript.jsx,javascriptreact EmmetInstall
@@ -262,24 +276,12 @@ let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 let g:python3_host_prog = expand($ASDF_DIR . "/shims/python")
 let g:deoplete#enable_at_startup = 1
 
-" Map `<tab>` to Deoplete
-inoremap <expr><TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space()
-  \ ? "\<TAB>"
-  \ : deoplete#mappings#manual_complete()
-inoremap <expr><S-Tab> pumvisible() ? "\<C-p>" : ''
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Neosnippet
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-imap <C-k>  <Plug>(neosnippet_expand_or_jump)
-smap <C-k>  <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>  <Plug>(neosnippet_expand_target)
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+  \ "\<Plug>(neosnippet_expand_or_jump)" :
+  \ pumvisible() ? "\<C-n>" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+  \ "\<Plug>(neosnippet_expand_or_jump)" :
+  \ pumvisible() ? "\<C-n>" : "\<TAB>"
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " LanguageClient
@@ -289,7 +291,9 @@ let g:LanguageClient_serverCommands = {
   \ 'javascriptreact': ['npx', 'javascript-typescript-stdio'],
   \ 'javascript.jsx': ['npx', 'javascript-typescript-stdio'],
   \ 'javascript': ['npx', 'javascript-typescript-stdio'],
-  \ 'typescript': ['npx', 'javascript-typescript-stdio']
+  \ 'typescript': ['npx', 'javascript-typescript-stdio'],
+  \ 'yaml': ['npx', 'yaml-language-server', '--stdio'],
+  \ 'yml': ['npx', 'yaml-language-server', '--stdio'],
   \ }
 
 function! LC_maps()
@@ -301,13 +305,36 @@ endfunction
 
 autocmd FileType * call LC_maps()
 
+let yamlSettings = json_decode('
+\{
+\  "yaml": {
+\    "completion": true,
+\    "hover": true,
+\    "validate": true,
+\    "format": {
+\      "enable": false
+\    }
+\  },
+\  "http": {
+\    "proxyStrictSSL": true
+\  }
+\}')
+
+augroup LanguageClient_config
+  autocmd!
+  autocmd User LanguageClientStarted call LanguageClient#Notify(
+    \ 'workspace/didChangeConfiguration', { 'settings': yamlSettings })
+augroup END
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ALE
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let g:ale_lint_on_text_changed = 'never'
-" let g:ale_sign_error = '✖︎'
-" let g:ale_sign_warning = '⚠'
+let g:ale_fix_on_save = 0
+let g:ale_lint_on_text_changed = 'always'
+let g:ale_lint_delay = 1000
+let g:ale_sign_error = '🚫'
+let g:ale_sign_warning = '⚠️ '
 let g:ale_linters = {
   \ 'erb': [''],
   \ 'graphql': ['gqlint'],
@@ -336,4 +363,3 @@ let g:closetag_xhtml_filenames = '*.jsx,*.js'
 
 let g:gutentags_ctags_executable = '/usr/local/bin/ctags'
 let g:gutentags_exclude_filetypes = ['gitcommit', 'gitrebase']
-au FileType gitcommit,gitrebase let g:gutentags_enabled=0
