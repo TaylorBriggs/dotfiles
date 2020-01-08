@@ -33,6 +33,12 @@ function! LC_Install(info)
   endif
 endfunction
 
+function! ALE_Install(info)
+  if a:info.status == 'installed' || a:info.force
+    !npm install -g eslint prettier
+  endif
+endfunction
+
 call plug#begin(expand('~/.local/share/nvim/plugged'))
 
 " Utilities
@@ -46,19 +52,11 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'dense-analysis/ale'
 Plug 'jiangmiao/auto-pairs'
 Plug 'itchyny/lightline.vim'
-Plug 'autozimu/LanguageClient-neovim', {
-  \ 'branch': 'next',
-  \ 'do': function('LC_Install'),
-  \ }
 Plug 'othree/javascript-libraries-syntax.vim'
 Plug 'rizzatti/dash.vim'
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Shougo/neosnippet.vim'
-Plug 'Shougo/neosnippet-snippets'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'yggdroot/indentLine'
 
@@ -69,6 +67,16 @@ Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'christoomey/vim-tmux-navigator'
 
 " Language support
+Plug 'autozimu/LanguageClient-neovim', {
+  \ 'branch': 'next',
+  \ 'do': function('LC_Install'),
+  \ }
+Plug 'dense-analysis/ale', {
+  \ 'do': function('ALE_Install'),
+  \ }
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'Shougo/neosnippet.vim'
+Plug 'Shougo/neosnippet-snippets'
 Plug 'sheerun/vim-polyglot'
 Plug 'jparise/vim-graphql'
 Plug 'tpope/vim-markdown'
@@ -336,18 +344,18 @@ let g:ale_lint_delay = 1000
 let g:ale_sign_error = '🚫'
 let g:ale_sign_warning = '⚠️ '
 let g:ale_linters = {
-  \ 'erb': [''],
-  \ 'graphql': ['gqlint'],
+  \ 'javascript': ['eslint'],
+  \ 'javascript.jsx': ['eslint'],
+  \ 'javascriptreact': ['eslint'],
+  \ 'jsx': ['eslint'],
   \ }
 let g:ale_fixers = {
   \ '*': ['remove_trailing_lines', 'trim_whitespace'],
   \ 'javascript': ['eslint'],
   \ 'javascript.jsx': ['eslint'],
   \ 'javascriptreact': ['eslint'],
-  \ 'typescript': ['tslint'],
-  \ 'typescript.tsx': ['tslint'],
+  \ 'jsx': ['eslint'],
   \ 'json': ['prettier'],
-  \ 'ruby': ['rubocop'],
   \ }
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
