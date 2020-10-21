@@ -6,9 +6,7 @@ filetype off
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Install Vim-Plug
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let vimplug_exists=expand('~/.local/share/nvim/site/autoload/plug.vim')
-
-if !filereadable(vimplug_exists)
+if empty(glob(stdpath('data') . '/site/autoload/plug.vim'))
   if !executable("curl")
     echoerr "You have to install curl or first install vim-plug yourself!"
     execute "q!"
@@ -16,12 +14,10 @@ if !filereadable(vimplug_exists)
 
   echo "Installing Vim-Plug..."
   echo ""
-  silent !\curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  let g:not_finish_vimplug = "yes"
+  silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-  autocmd VimEnter * PlugInstall!
-endif
+  autocmd VimEnter * PlugInstall! --sync | source ~/.config/nvim/init.vim
+end
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins
@@ -30,6 +26,7 @@ function! LC_Install(info)
   if a:info.status == 'installed' || a:info.force
     !/bin/bash install.sh
     !npm install -g javascript-typescript-langserver yaml-language-server@^0.4
+    UpdateRemotePlugins
   endif
 endfunction
 
@@ -39,7 +36,7 @@ function! ALE_Install(info)
   endif
 endfunction
 
-call plug#begin(expand('~/.local/share/nvim/plugged'))
+call plug#begin(stdpath('data') . '/plugged')
 
 " Utilities
 Plug '/usr/local/opt/fzf'
@@ -48,8 +45,6 @@ Plug 'preservim/nerdtree'
 Plug 'xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-endwise'
-Plug 'tpope/vim-eunuch'
-Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'jiangmiao/auto-pairs'
@@ -79,16 +74,11 @@ Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'sheerun/vim-polyglot'
 Plug 'jparise/vim-graphql'
-Plug 'tpope/vim-markdown'
 Plug 'alvan/vim-closetag'
 Plug 'mattn/emmet-vim'
-
-" Frameworks
-Plug 'tpope/vim-rails'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
 
 call plug#end()
-
-filetype plugin indent on
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Leader and mappings
@@ -213,9 +203,9 @@ set completeopt=longest,menuone,preview
 
 set visualbell
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NERDTree
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:NERDTreeDirArrows = 1
 let g:NERDTreeDirArrowExpandable = '▸'
@@ -280,16 +270,26 @@ let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 " Deoplete
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+set completeopt=menu,noselect
 " python3 installed via asdf
 let g:python3_host_prog = expand($ASDF_DIR . "/shims/python")
 let g:deoplete#enable_at_startup = 1
+call deoplete#custom#option('smart_case', v:true)
 
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-  \ "\<Plug>(neosnippet_expand_or_jump)" :
-  \ pumvisible() ? "\<C-n>" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-  \ "\<Plug>(neosnippet_expand_or_jump)" :
-  \ pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "\<s-tab>"
+inoremap <silent> <CR> <C-r>=<SID>close_popup_save_indent()<CR>
+function! s:close_popup_save_indent() abort
+  return deoplete#close_popup() . "\<CR>"
+endfunction
+
+imap <C-k> <Plug>(neosnippet_expand_or_jump)
+smap <C-k> <Plug>(neosnippet_expand_or_jump)
+xmap <C-k> <Plug>(neosnippet_expand_target)
+
+if has('conceal')
+  set conceallevel=2 concealcursor=niv
+endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " LanguageClient
@@ -334,7 +334,7 @@ augroup LanguageClient_config
     \ 'workspace/didChangeConfiguration', { 'settings': yamlSettings })
 augroup END
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ALE
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -365,9 +365,9 @@ let g:ale_fixers = {
 let g:closetag_filenames = '*.html,*.jsx,*.js'
 let g:closetag_xhtml_filenames = '*.jsx,*.js'
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Gutentags
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:gutentags_ctags_executable = '/usr/local/bin/ctags'
 let g:gutentags_exclude_filetypes = ['gitcommit', 'gitrebase']
