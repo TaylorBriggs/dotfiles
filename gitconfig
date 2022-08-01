@@ -1,11 +1,21 @@
 [user]
 	name = Taylor Briggs
-	email = taylor.briggs@gmail.com
+	email = taylor.briggs@cobalt.io
 
 [core]
   editor = nvim
   excludesfile = ~/.gitignore
   quotepath = false
+  pager = delta
+
+[interactive]
+  diffFilter = delta --color-only
+[add.interactive]
+  useBuiltin = false
+
+[delta]
+  navigate = true
+  light = false
 
 [color]
   ui = true
@@ -20,7 +30,10 @@
   untracked = cyan
 
 [merge]
-  tool = opendiff
+  conflictstyle = diff3
+
+[diff]
+  colorMoved = default
 
 [alias]
   aa = add -A
@@ -55,5 +68,3 @@
 [push]
   default = current
 
-[commit]
-  gpgsign = true
