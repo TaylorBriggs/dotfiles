@@ -10,8 +10,6 @@
 
 [interactive]
   diffFilter = delta --color-only
-[add.interactive]
-  useBuiltin = false
 
 [delta]
   navigate = true
@@ -42,6 +40,7 @@
   ci = commit -v
   br = branch
   df = diff
+  dfs = diff --staged
   dfd = diff --diff-filter=D
   dfm = diff --diff-filter=M
   dfx = diff --diff-filter=X
@@ -68,3 +67,14 @@
 [push]
   default = current
 
+[commit]
+	gpgsign = true
+
+[tag]
+  gpgsign = true
+
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f

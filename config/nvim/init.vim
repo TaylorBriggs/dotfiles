@@ -4,8 +4,16 @@ set nocompatible
 filetype off
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Utility function for getting system paths
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! GetSystemPath(command)
+  return trim(system(a:command))
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Install Vim-Plug
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 if empty(glob(stdpath('data') . '/site/autoload/plug.vim'))
   if !executable("curl")
     echoerr "You have to install curl or first install vim-plug yourself!"
@@ -22,24 +30,11 @@ end
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! LC_Install(info)
-  if a:info.status == 'installed' || a:info.force
-    !/bin/bash install.sh
-    !npm install -g javascript-typescript-langserver yaml-language-server@^0.4
-    UpdateRemotePlugins
-  endif
-endfunction
-
-function! ALE_Install(info)
-  if a:info.status == 'installed' || a:info.force
-    !npm install -g eslint prettier
-  endif
-endfunction
-
 call plug#begin(stdpath('data') . '/plugged')
 
+let fzf_path = GetSystemPath('brew --prefix fzf')
 " Utilities
-Plug '/usr/local/opt/fzf'
+Plug fzf_path
 Plug 'junegunn/fzf.vim'
 Plug 'preservim/nerdtree'
 Plug 'xuyuanp/nerdtree-git-plugin'
@@ -50,7 +45,6 @@ Plug 'tpope/vim-unimpaired'
 Plug 'jiangmiao/auto-pairs'
 Plug 'itchyny/lightline.vim'
 Plug 'othree/javascript-libraries-syntax.vim'
-Plug 'rizzatti/dash.vim'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'yggdroot/indentLine'
@@ -64,19 +58,18 @@ Plug 'christoomey/vim-tmux-navigator'
 " Language support
 Plug 'autozimu/LanguageClient-neovim', {
   \ 'branch': 'next',
-  \ 'do': function('LC_Install'),
+  \ 'do': 'bash install.sh',
   \ }
-Plug 'dense-analysis/ale', {
-  \ 'do': function('ALE_Install'),
-  \ }
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Shougo/neosnippet.vim'
-Plug 'Shougo/neosnippet-snippets'
+Plug 'dense-analysis/ale'
+
+let g:polyglot_disabled = ['markdown'] " Use tpope/vim-markdown instead
 Plug 'sheerun/vim-polyglot'
 Plug 'jparise/vim-graphql'
 Plug 'alvan/vim-closetag'
 Plug 'mattn/emmet-vim'
+Plug 'tpope/vim-markdown'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
+Plug 'tpope/vim-rails'
 
 call plug#end()
 
@@ -180,13 +173,20 @@ set incsearch
 set ignorecase
 set smartcase
 
-nnoremap <Leader>h :nohl<CR>
+nnoremap <leader>h :nohl<cr>
+nnoremap <leader>f :Rg<cr>
+nnoremap <leader>t :Files<cr>
 
-if (executable('ag'))
-  let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
-endif
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --color always --column --line-number --no-heading --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let preview_opts = {'options': ['--disabled', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  let grep_opts = fzf#vim#with_preview(preview_opts, 'right', 'ctrl-/')
+  call fzf#vim#grep(initial_command, 1, grep_opts, a:fullscreen)
+endfunction
 
-nnoremap <Leader>t :Files<CR>
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tab completion options
@@ -262,77 +262,40 @@ autocmd FileType html,css,javascript.jsx,javascriptreact EmmetInstall
 " Markdown
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let g:polyglot_disabled = ['markdown'] " Use tpope/vim-markdown instead
 let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 \ 'ruby', 'bash=sh']
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Deoplete
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-set completeopt=menu,noselect
-" python3 installed via asdf
-let g:python3_host_prog = expand($ASDF_DIR . "/shims/python")
-let g:deoplete#enable_at_startup = 1
-call deoplete#custom#option('smart_case', v:true)
-
-inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
-inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "\<s-tab>"
-inoremap <silent> <CR> <C-r>=<SID>close_popup_save_indent()<CR>
-function! s:close_popup_save_indent() abort
-  return deoplete#close_popup() . "\<CR>"
-endfunction
-
-imap <C-k> <Plug>(neosnippet_expand_or_jump)
-smap <C-k> <Plug>(neosnippet_expand_or_jump)
-xmap <C-k> <Plug>(neosnippet_expand_target)
-
-if has('conceal')
-  set conceallevel=2 concealcursor=niv
-endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " LanguageClient
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+let g:loaded_perl_provider = 0
+let g:python3_host_prog = GetSystemPath('which python')
+let g:node_host_prog = GetSystemPath('which neovim-node-host')
+let g:ruby_host_prog = GetSystemPath('which neovim-ruby-host')
+
+let typescript_language_server = GetSystemPath('which typescript-language-server')
+let solargraph = GetSystemPath('which solargraph')
+let js_command = [typescript_language_server, '--stdio']
 let g:LanguageClient_serverCommands = {
-  \ 'javascriptreact': ['npx', 'javascript-typescript-stdio'],
-  \ 'javascript.jsx': ['npx', 'javascript-typescript-stdio'],
-  \ 'javascript': ['npx', 'javascript-typescript-stdio'],
-  \ 'typescript': ['npx', 'javascript-typescript-stdio'],
-  \ 'yaml': ['npx', 'yaml-language-server', '--stdio'],
-  \ 'yml': ['npx', 'yaml-language-server', '--stdio'],
+  \ 'javascriptreact': js_command,
+  \ 'javascript.jsx': js_command,
+  \ 'javascript': js_command,
+  \ 'typescript': js_command,
+  \ 'ruby': [solargraph, 'stdio'],
   \ }
 
 function! LC_maps()
   if has_key(g:LanguageClient_serverCommands, &filetype)
-    nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-    nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+    nmap <buffer> <silent> K <Plug>(lcn-hover)
+    nmap <buffer> <silent> gd <Plug>(lcn-definition)
+    nmap <buffer> <silent> <F2> <Plug>(lcn-rename)
   endif
 endfunction
 
 autocmd FileType * call LC_maps()
 
-let yamlSettings = json_decode('
-\{
-\  "yaml": {
-\    "completion": true,
-\    "hover": true,
-\    "validate": true,
-\    "format": {
-\      "enable": false
-\    }
-\  },
-\  "http": {
-\    "proxyStrictSSL": true
-\  }
-\}')
-
-augroup LanguageClient_config
-  autocmd!
-  autocmd User LanguageClientStarted call LanguageClient#Notify(
-    \ 'workspace/didChangeConfiguration', { 'settings': yamlSettings })
-augroup END
+nmap <F5> <Plug>(lcn-menu)
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ALE
@@ -348,6 +311,7 @@ let g:ale_linters = {
   \ 'javascript.jsx': ['eslint'],
   \ 'javascriptreact': ['eslint'],
   \ 'jsx': ['eslint'],
+  \ 'ruby': ['rubocop'],
   \ }
 let g:ale_fixers = {
   \ '*': ['remove_trailing_lines', 'trim_whitespace'],
@@ -356,6 +320,7 @@ let g:ale_fixers = {
   \ 'javascriptreact': ['eslint'],
   \ 'jsx': ['eslint'],
   \ 'json': ['prettier'],
+  \ 'ruby': ['rubocop'],
   \ }
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -369,5 +334,5 @@ let g:closetag_xhtml_filenames = '*.jsx,*.js'
 " Gutentags
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let g:gutentags_ctags_executable = '/usr/local/bin/ctags'
+let g:gutentags_ctags_executable = GetSystemPath('which ctags')
 let g:gutentags_exclude_filetypes = ['gitcommit', 'gitrebase']

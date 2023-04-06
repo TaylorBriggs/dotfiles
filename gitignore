@@ -36,5 +36,11 @@ vendor/ruby
 node_modules
 .tern-port
 
-# ctags
+# ctags #
+#########
 tags*
+
+# Solargraph #
+##############
+config/definitions.rb
+.solargraph.yml

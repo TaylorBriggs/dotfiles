@@ -1,5 +1,9 @@
-if not functions -q fisher
-  set -q XDG_CONFIG_HOME; or set XDG_CONFIG_HOME ~/.config
-  curl https://git.io/fisher --create-dirs -sLo $XDG_CONFIG_HOME/fish/functions/fisher.fish
-  fish -c fisher
-end
+# this loads homebrew variables
+eval (/opt/homebrew/bin/brew shellenv)
+# rtx
+rtx activate fish | source
+# other configs
+source $HOME/.config/fish/config/gpg.fish
+source $HOME/.config/fish/config/github.fish
+source $HOME/.config/fish/config/ruby.fish
+source $HOME/.config/fish/config/editor.fish
