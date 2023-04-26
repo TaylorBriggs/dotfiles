@@ -61,6 +61,7 @@ Plug 'autozimu/LanguageClient-neovim', {
   \ 'do': 'bash install.sh',
   \ }
 Plug 'dense-analysis/ale'
+Plug 'shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
 let g:polyglot_disabled = ['markdown'] " Use tpope/vim-markdown instead
 Plug 'sheerun/vim-polyglot'
@@ -264,6 +265,12 @@ autocmd FileType html,css,javascript.jsx,javascriptreact EmmetInstall
 
 let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 \ 'ruby', 'bash=sh']
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Deoplete
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:deoplete#enable_at_startup = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " LanguageClient
