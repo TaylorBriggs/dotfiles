@@ -1,5 +1,5 @@
 # this loads homebrew variables
-eval (/opt/homebrew/bin/brew shellenv)
+/opt/homebrew/bin/brew shellenv | source
 # rtx
 rtx activate fish | source
 # other configs
