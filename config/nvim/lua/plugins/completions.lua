@@ -1,15 +1,21 @@
 return {
-  { 'hrsh7th/cmp-nvim-lsp' },
-  { 'github/copilot.vim' },
   {
-    'L3MON4D3/LuaSnip',
-    dependencies = {
-      'saadparwaiz1/cmp_luasnip',
-      'rafamadriz/friendly-snippets',
-    },
+    'github/copilot.vim',
+    config = function()
+      vim.keymap.set('i', '<C-J>', 'copilot#Accept("\\<CR>")', {
+        expr = true,
+        replace_keycodes = false,
+      })
+      vim.g.copilot_no_tab_map = true
+    end,
   },
   {
     'hrsh7th/nvim-cmp',
+    dependencies = {
+      'saadparwaiz1/cmp_luasnip',
+      'rafamadriz/friendly-snippets',
+      'L3MON4D3/LuaSnip',
+    },
     config = function()
       local has_words_before = function()
         unpack = unpack or table.unpack
@@ -19,6 +25,7 @@ return {
 
       local cmp = require('cmp')
       local luasnip = require('luasnip')
+
       require('luasnip.loaders.from_vscode').lazy_load()
 
       cmp.setup({

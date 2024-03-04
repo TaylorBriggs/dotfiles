@@ -8,14 +8,15 @@ return {
   },
   config = function()
     require('neo-tree').setup({
+      close_if_last_window = true,
       event_handlers = {
         {
           event = 'file_opened',
-          handler = function(file_path)
+          handler = function(_)
             require('neo-tree.command').execute({ action = 'close' })
           end
         },
-      }
+      },
     })
 
     vim.keymap.set('n', '<leader>\\', ':Neotree filesystem toggle left<CR>', {})

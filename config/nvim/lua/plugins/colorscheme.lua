@@ -1,7 +1,8 @@
 return {
-  'dracula/vim',
-  name = 'dracula',
+  'catppuccin/nvim',
+  name = 'catppuccin',
+  priority = 1000,
   config = function ()
-    vim.cmd.colorscheme 'dracula'
+    vim.cmd.colorscheme 'catppuccin-mocha'
   end
 }
