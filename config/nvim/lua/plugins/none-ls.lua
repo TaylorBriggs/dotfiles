@@ -9,10 +9,10 @@ return {
 
     null_ls.setup({
       sources = {
-        null_ls.builtins.diagnostic.eslint_d,
-        null_ls.builtins.diagnostic.fish,
-        null_ls.builtins.diagnostic.markdownlint,
-        null_ls.builtins.diagnostic.rubocop,
+        require('none-ls.diagnostics.eslint_d'),
+        null_ls.builtins.diagnostics.fish,
+        null_ls.builtins.diagnostics.markdownlint,
+        null_ls.builtins.diagnostics.rubocop,
         null_ls.builtins.formatting.fish_indent,
         null_ls.builtins.formatting.markdownlint,
         null_ls.builtins.formatting.prettier,
