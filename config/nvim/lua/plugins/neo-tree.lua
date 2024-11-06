@@ -43,11 +43,10 @@ return {
 			filesystem = {
 				filtered_items = {
 					hide_dotfiles = false,
-					hide_by_pattern = {
-						".git*",
-					},
+					hide_gitignored = true,
 					never_show = {
 						".DS_Store",
+						".git",
 						"tags",
 					},
 				},

@@ -1,12 +1,11 @@
 set encoding=utf-8
 set fileencoding=utf-8
-set nocompatible
 filetype off
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Utility function for getting system paths
+" Utility function for getting output from system commands
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! GetSystemPath(command)
+function! GetSystemOutput(command)
   return trim(system(a:command))
 endfunction
 
@@ -14,17 +13,20 @@ endfunction
 " Install Vim-Plug
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-if empty(glob(stdpath('data') . '/site/autoload/plug.vim'))
-  if !executable("curl")
-    echoerr "You have to install curl or first install vim-plug yourself!"
-    execute "q!"
+let plug_path = glob(stdpath('data') . '/site/autoload/plug.vim')
+let init_path = glob(stdpath('config') . '/init.vim')
+
+if empty(plug_path)
+  if !executable('curl')
+    echoerr 'You have to install curl or first install vim-plug yourself!'
+    execute 'q!'
   endif
 
-  echo "Installing Vim-Plug..."
-  echo ""
-  silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  echo 'Installing Vim-Plug...'
+  echo ''
+  silent system('curl -fLo ' . plug_path . ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim')
 
-  autocmd VimEnter * PlugInstall! --sync | source ~/.config/nvim/init.vim
+  autocmd VimEnter * PlugInstall! --sync | source init_path
 end
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -32,11 +34,11 @@ end
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin(stdpath('data') . '/plugged')
 
-let fzf_path = GetSystemPath('brew --prefix fzf')
 " Utilities
-Plug fzf_path
+Plug GetSystemOutput('brew --prefix fzf')
 Plug 'junegunn/fzf.vim'
 Plug 'preservim/nerdtree'
+Plug 'ryanoasis/vim-devicons'
 Plug 'xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-endwise'
@@ -73,6 +75,8 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
 Plug 'tpope/vim-rails'
 
 call plug#end()
+
+filetype plugin indent on
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Leader and mappings
@@ -182,7 +186,15 @@ function! RipgrepFzf(query, fullscreen)
   let command_fmt = 'rg --color always --column --line-number --no-heading --smart-case -- %s || true'
   let initial_command = printf(command_fmt, shellescape(a:query))
   let reload_command = printf(command_fmt, '{q}')
-  let preview_opts = {'options': ['--disabled', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  let preview_opts = {
+    \ 'options': [
+      \ '--disabled',
+      \ '--query',
+      \ a:query,
+      \ '--bind',
+      \ 'change:reload:' . reload_command
+      \ ]
+    \ }
   let grep_opts = fzf#vim#with_preview(preview_opts, 'right', 'ctrl-/')
   call fzf#vim#grep(initial_command, 1, grep_opts, a:fullscreen)
 endfunction
@@ -195,8 +207,10 @@ command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
 set wildmode=list:longest,list:full
 set wildignore+=*/.git/*,*/vendor/ruby/**,*/_build/**,*/deps/**,*/tmp/*,.DS_Store
-set complete=.,w,t
-set completeopt=longest,menuone,preview
+set completeopt=longest,menuone,menu,preview,noselect
+
+inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "\<s-tab>"
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Less Annoying Bell
@@ -212,7 +226,7 @@ let g:NERDTreeDirArrows = 1
 let g:NERDTreeDirArrowExpandable = '▸'
 let g:NERDTreeDirArrowCollapsible = '▾'
 let NERDTreeCaseSensitiveSort = 1
-let NERDTreeWinPos = "left"
+let NERDTreeWinPos = 'left'
 let NERDTreeQuitOnOpen = 1
 let NERDTreeShowHidden = 1
 let NERDTreeIgnore = ['.git$[[dir]]', '.DS_Store']
@@ -220,7 +234,7 @@ let NERDTreeMinimalUI = 1
 let NERDTreeAutoDeleteBuffer = 1
 
 function! s:CheckToOpenNERDTree() abort
-  if (&ft == 'gitcommit' || &ft == 'gitrebase')
+  if (&diff || &ft == 'gitcommit' || &ft == 'gitrebase')
     return
   endif
 
@@ -228,7 +242,7 @@ function! s:CheckToOpenNERDTree() abort
 endfunction
 
 function! s:CheckToCloseNERDTree() abort
-  if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree.isTabTree())
+  if (winnr('$') == 1 && exists('b:NERDTreeType') && b:NERDTree.isTabTree())
     quit
   endif
 endfunction
@@ -263,8 +277,14 @@ autocmd FileType html,css,javascript.jsx,javascriptreact EmmetInstall
 " Markdown
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
-\ 'ruby', 'bash=sh']
+let g:markdown_fenced_languages = [
+  \ 'javascript',
+  \ 'json',
+  \ 'sql',
+  \ 'elixir',
+  \ 'ruby',
+  \ 'bash=sh'
+  \ ]
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Deoplete
@@ -272,17 +292,25 @@ let g:markdown_fenced_languages = ['javascript', 'json', 'sql', 'elixir',
 
 let g:deoplete#enable_at_startup = 1
 
+call deoplete#custom#option('smart_case', v:true)
+
+function! s:close_popup_save_indent() abort
+  return deoplete#close_popup() . "\<CR>"
+endfunction
+
+inoremap <silent> <CR> <C-r>=<SID>close_popup_save_indent()<CR>
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " LanguageClient
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:loaded_perl_provider = 0
-let g:python3_host_prog = GetSystemPath('which python')
-let g:node_host_prog = GetSystemPath('which neovim-node-host')
-let g:ruby_host_prog = GetSystemPath('which neovim-ruby-host')
+let g:python3_host_prog = GetSystemOutput('which python')
+let g:node_host_prog = GetSystemOutput('which neovim-node-host')
+let g:ruby_host_prog = GetSystemOutput('which neovim-ruby-host')
 
-let typescript_language_server = GetSystemPath('which typescript-language-server')
-let solargraph = GetSystemPath('which solargraph')
+let typescript_language_server = GetSystemOutput('which typescript-language-server')
+let solargraph = GetSystemOutput('which solargraph')
 let js_command = [typescript_language_server, '--stdio']
 let g:LanguageClient_serverCommands = {
   \ 'javascriptreact': js_command,
@@ -341,5 +369,5 @@ let g:closetag_xhtml_filenames = '*.jsx,*.js'
 " Gutentags
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let g:gutentags_ctags_executable = GetSystemPath('which ctags')
+let g:gutentags_ctags_executable = GetSystemOutput('which ctags')
 let g:gutentags_exclude_filetypes = ['gitcommit', 'gitrebase']
