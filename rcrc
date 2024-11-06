@@ -1,0 +1,2 @@
+DOTFILES_DIRS="/Users/taylor/Projects/dotfiles"
+EXCLUDES=".gitignore Brewfile* README.md solargraph.yml tags"
