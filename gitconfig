@@ -77,6 +77,12 @@
 [tag]
   gpgsign = true
 
+[gpg]
+  program = /usr/local/bin/gpg
+
+[credential]
+	helper = /Users/taylor/Projects/cobalt-admin-web/bin/git-credentials
+
 [filter "lfs"]
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
