@@ -29,6 +29,7 @@
 # Bundler #
 ###########
 .bundle
+vendor/
 vendor/ruby
 
 # Yarn / npm #
@@ -42,5 +43,13 @@ tags*
 
 # Solargraph #
 ##############
-config/definitions.rb
+definitions.rb
 .solargraph.yml
+
+# ruby-lsp #
+############
+.ruby-lsp
+
+# session-control #
+###################
+session_control.json
