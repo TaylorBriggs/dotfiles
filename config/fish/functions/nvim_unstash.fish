@@ -1,6 +1,9 @@
-function nvim_unstash
-	if test -d $HOME/dotfiles/config/xnvim
-    rm -rf $HOME/dotfiles/config/nvim
-    mv $HOME/dotfiles/config/xnvim $HOME/dotfiles/config/nvim
+function nvim_unstash -d "Restore previously stashed nvim config"
+	if test -d ~/.config/xnvim
+    if test -d ~/.config/nvim
+      rm -rf ~/.config/nvim
+    end
+    mv ~/.config/xnvim ~/.config/nvim
+    rm -rf ~/.config/xnvim
   end
 end
