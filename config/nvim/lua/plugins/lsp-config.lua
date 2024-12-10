@@ -1,67 +1,121 @@
 return {
-	"neovim/nvim-lspconfig",
-	lazy = false,
-	event = { "BufReadPre", "BufNewFile" },
-	dependencies = {
-		"hrsh7th/cmp-nvim-lsp",
-		"williamboman/mason.nvim",
-		"williamboman/mason-lspconfig.nvim",
-	},
-	config = function()
-		local lspconfig = require("lspconfig")
-		local capabilities = require("cmp_nvim_lsp").default_capabilities()
+  {
+    "williamboman/mason.nvim",
+    lazy = false,
+    config = function()
+      require("mason").setup()
+    end,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    lazy = false,
+    opts = {
+      auto_install = true,
+    },
+    config = function()
+      require("mason-lspconfig").setup({
+        handlers = {
+          function(server_name)
+            require("lspconfig")[server_name].setup({})
+          end,
+          ["ruby_lsp"] = function()
+            require("lspconfig")["ruby_lsp"].setup({
+              autostart = true,
+              cmd = { "mise", "x", "--", "ruby-lsp" },
+              cmd_env = {
+                RUBOCOP_IGNORE_TODO = "true",
+                RUBOCOP_IGNORE_FOCUSED_SPECS = "true",
+              },
+              single_file_support = false,
+              on_attach = function(client, _bufnr)
+                client.server_capabilities.semanticTokensProvider =
+                    false
+              end,
+            })
+          end,
+        },
+      })
+    end,
+  },
+  {
+    "neovim/nvim-lspconfig",
+    lazy = false,
+    config = function()
+      local lspconfig_defaults = require("lspconfig").util.default_config
 
-		local lsp_formatting = function(bufnr)
-			vim.lsp.buf.format({
-				filter = function(client)
-					return client.name == "null-ls"
-				end,
-				bufnr = bufnr,
-			})
-		end
+      lspconfig_defaults.capabilities = vim.tbl_deep_extend(
+        "force",
+        lspconfig_defaults.capabilities,
+        require("cmp_nvim_lsp").default_capabilities()
+      )
 
-		local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+      vim.api.nvim_create_autocmd("LspAttach", {
+        desc = "LSP actions",
+        callback = function(event)
+          local opts = { buffer = event.buf }
 
-		local on_attach = function(client, bufnr)
-			if client.supports_method("textDocument/formatting") then
-				vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-				vim.api.nvim_create_autocmd("BufWritePre", {
-					group = augroup,
-					buffer = bufnr,
-					callback = function()
-						lsp_formatting(bufnr)
-					end,
-				})
-			end
-		end
+          vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+          vim.keymap.set(
+            "n",
+            "<leader>gd",
+            vim.lsp.buf.definition,
+            opts
+          )
+          vim.keymap.set(
+            "n",
+            "<leader>gD",
+            vim.lsp.buf.declaration,
+            opts
+          )
+          vim.keymap.set(
+            "n",
+            "<leader>gi",
+            vim.lsp.buf.implementation,
+            opts
+          )
+          vim.keymap.set(
+            "n",
+            "<leader>go",
+            vim.lsp.buf.type_definition,
+            opts
+          )
+          vim.keymap.set(
+            "n",
+            "<leader>gr",
+            vim.lsp.buf.references,
+            opts
+          )
+          vim.keymap.set(
+            "n",
+            "<leader>gs",
+            vim.lsp.buf.signature_help,
+            opts
+          )
+          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+          vim.keymap.set(
+            "n",
+            "<leader>F",
+            "<cmd>lua vim.lsp.buf.format({async = true})<CR>",
+            opts
+          )
+          vim.keymap.set(
+            "n",
+            "<leader>ca",
+            vim.lsp.buf.code_action,
+            opts
+          )
+        end,
+      })
 
-		require("mason").setup()
-		require("mason-lspconfig").setup({
-			automatic_installation = true,
-			handlers = {
-				function(server_name)
-					if server_name == "tsserver" then
-						server_name = "ts_ls"
-					end
-					lspconfig[server_name].setup({
-						capabilities = capabilities,
-						on_attach = on_attach,
-					})
-				end,
-			},
-		})
-
-		local map = function(keys, func, desc)
-			vim.keymap.set("n", keys, func, {
-				buffer = true,
-				remap = false,
-				desc = "LSP: " .. desc,
-			})
-		end
-
-		map("K", vim.lsp.buf.hover, "Hover Documentation")
-		map("<leader>gD", vim.lsp.buf.declaration, "Goto Declaration")
-		map("<leader>rn", vim.lsp.buf.rename, "Rename")
-		map("<leader>ca", vim.lsp.buf.code_action, "Code Action")
-	end,
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "ruby",
+        callback = function()
+          vim.lsp.start({
+            name = "rubocop",
+            cmd = { "bundle", "exec", "rubocop", "--lsp" },
+          })
+        end,
+      })
+    end,
+  },
 }

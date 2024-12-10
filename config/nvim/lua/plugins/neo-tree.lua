@@ -2,7 +2,6 @@ return {
 	"nvim-neo-tree/neo-tree.nvim",
 	keys = {
 		{ "<leader>\\", "<CMD>Neotree filesystem toggle<CR>" },
-		{ "<leader>bf", "<CMD>Neotree buffers reveal float<CR>" },
 	},
 	branch = "v3.x",
 	dependencies = {
