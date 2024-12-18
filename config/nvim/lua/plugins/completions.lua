@@ -12,8 +12,10 @@ return {
   {
     "CopilotC-Nvim/CopilotChat.nvim",
     dependencies = {
+      "nvim-telescope/telescope.nvim",
       "nvim-lua/plenary.nvim",
     },
+    event = "VeryLazy",
     build = "make tiktoken",
     opts = {
       window = {
@@ -24,13 +26,50 @@ return {
         row = 1,
       },
     },
-    config = function()
+    config = function(_, opts)
       local chat = require("CopilotChat")
 
-      chat.setup({})
+      chat.setup(opts)
 
-      vim.keymap.set("n", "<leader>CC", chat.toggle)
+      vim.api.nvim_create_autocmd("BufEnter", {
+        pattern = "copilot-*",
+        callback = function()
+          vim.opt_local.relativenumber = true
+          vim.opt_local.number = true
+
+          local ft = vim.bo.filetype
+          if ft == "copilot-chat" then
+            vim.bo.filetype = "markdown"
+          end
+        end,
+      })
     end,
+    keys = {
+      {
+        "<leader>CC",
+        function()
+          require("CopilotChat").toggle()
+        end,
+      },
+      {
+        "<leader>CCP",
+        function()
+          require("CopilotChat.integrations.telescope").pick(require("CopilotChat.actions").prompt_actions())
+        end,
+      },
+      {
+        "<leader>CCQ",
+        function()
+          local chat = require("CopilotChat")
+          local select = require("CopilotChat.select")
+          local input = vim.fn.input("Quick Chat: ")
+
+          if input ~= "" then
+            chat.ask(input, { selection = select.buffer })
+          end
+        end,
+      },
+    },
   },
   {
     "L3MON4D3/LuaSnip",

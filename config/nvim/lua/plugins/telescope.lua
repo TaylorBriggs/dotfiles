@@ -26,11 +26,6 @@ return {
       vim.keymap.set("n", "<leader>bf>", builtin.buffers, {})
       vim.keymap.set("n", "<leader><leader>", builtin.oldfiles, {})
 
-      vim.keymap.set("n", "<leader>CCP", function()
-        local actions = require("CopilotChat.actions")
-        require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
-      end)
-
       require("telescope").load_extension("ui-select")
     end,
   },
