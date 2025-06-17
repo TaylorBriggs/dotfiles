@@ -13,13 +13,15 @@ return {
       auto_install = true,
     },
     config = function()
+      local lspconfig = require("lspconfig")
+
       require("mason-lspconfig").setup({
         handlers = {
           function(server_name)
-            require("lspconfig")[server_name].setup({})
+            lspconfig[server_name].setup({})
           end,
           ["ruby_lsp"] = function()
-            require("lspconfig")["ruby_lsp"].setup({
+            lspconfig["ruby_lsp"].setup({
               autostart = true,
               cmd = { "mise", "x", "--", "ruby-lsp" },
               cmd_env = {
@@ -27,10 +29,6 @@ return {
                 RUBOCOP_IGNORE_FOCUSED_SPECS = "true",
               },
               single_file_support = false,
-              on_attach = function(client, _bufnr)
-                client.server_capabilities.semanticTokensProvider =
-                    false
-              end,
             })
           end,
         },
@@ -113,6 +111,7 @@ return {
           vim.lsp.start({
             name = "rubocop",
             cmd = { "bundle", "exec", "rubocop", "--lsp" },
+            filetypes = { "ruby" },
           })
         end,
       })

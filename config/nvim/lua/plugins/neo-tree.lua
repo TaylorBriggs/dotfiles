@@ -10,6 +10,7 @@ return {
 		"MunifTanjim/nui.nvim",
 	},
 	config = function()
+    local command = require("neo-tree.command")
 		require("neo-tree").setup({
 			auto_clean_after_session_restore = true,
 			close_if_last_window = true,
@@ -35,7 +36,7 @@ return {
 				{
 					event = "file_opened",
 					handler = function(_)
-						require("neo-tree.command").execute({ action = "close" })
+						command.execute({ action = "close" })
 					end,
 				},
 			},

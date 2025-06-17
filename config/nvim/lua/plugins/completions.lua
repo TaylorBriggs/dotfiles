@@ -13,17 +13,14 @@ return {
     "CopilotC-Nvim/CopilotChat.nvim",
     dependencies = {
       "nvim-telescope/telescope.nvim",
-      "nvim-lua/plenary.nvim",
+      { "nvim-lua/plenary.nvim", branch = "master" }
     },
     event = "VeryLazy",
     build = "make tiktoken",
     opts = {
+      model = "claude-3.7-sonnet-thought",
       window = {
-        layout = "float",
-        relative = "cursor",
-        width = 1,
-        height = 0.4,
-        row = 1,
+        width = 0.4,
       },
     },
     config = function(_, opts)
