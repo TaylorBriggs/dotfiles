@@ -1,4 +1,7 @@
 [tools]
 node = "20"
-python = "3.10"
+python = ["3.11", "3.12", "3.13"]
 ruby = "3.3.6"
+
+[settings]
+idiomatic_version_file_enable_tools = ["ruby", "node", "python"]
